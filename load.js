@@ -15,7 +15,8 @@ var loadState = {
         game.load.image('wallV', 'assets/wallVertical.png');
         game.load.image('wallH', 'assets/wallHorizontal.png');
         // Load a new asset that we will use in the menu state
-        game.load.image('background', 'assets/background.png');
+        game.load.image('menuBack', 'img/menuBack.png');
+        game.load.image('menuTitle', 'img/menuTitle.png');
     },
     create: function () {
         // Go to the menu state
