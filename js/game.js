@@ -1,5 +1,5 @@
 // Initialize Phaser
-var game = new Phaser.Game(800, 600, Phaser.AUTO, 'canvas');
+var game = new Phaser.Game(1024, 600, Phaser.AUTO, 'canvas');
 // Define our global variable
 game.global = { score: 0 };
 // Add all the states

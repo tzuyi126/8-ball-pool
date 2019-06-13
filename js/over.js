@@ -1,6 +1,6 @@
 var overState = {
     preload: function(){
-        game.load.spritesheet('button', 'img/button_sprite_sheet.png', 193, 71);
+        
     },
 
     create: function() {

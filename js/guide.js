@@ -2,6 +2,7 @@ var textTitle,text,text1,text11;
 var text2;
 var text2alpha;
 var logoimg;
+var logopic;
 
 var guideState = {
     preload: function(){
@@ -10,7 +11,9 @@ var guideState = {
     create: function() {
         //background
         game.add.image(0,0,'menuBack');
-        game.add.image(460,370,'8ballpool');
+        //pic
+        logopic = game.add.image(game.width/2,game.height/2+120,'8ballpool');
+        logopic.anchor.setTo(0.5,0.5);
 
         // logo
         logoimg = game.add.image(game.width/2, game.height/2-100, 'menuTitle');
@@ -47,9 +50,11 @@ var guideState = {
     },
     update:function(){
         //title
-        if(logoimg.x >280){
-            logoimg.x -= 3;
-            logoimg.y -= 3;
+        if(logoimg.x >300){
+            logoimg.x -= 4;
+            logoimg.y -= 2;
+            logopic.x += 5;
+            logopic.y += 1;
         }
         else{
            //text

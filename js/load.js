@@ -13,28 +13,20 @@ var loadState = {
         progressBar.anchor.setTo(0.5, 0.5);
         game.load.setPreloadSprite(progressBar);
         // Load all game assets
-        /*
-        game.load.image('player', 'img/bar.png');
-        game.load.image('enemy', 'img/bar.png');
-        game.load.image('coin', 'img/bar.png');
-        game.load.image('wallV', 'img/bar.png');
-        game.load.image('wallH', 'img/bar.png');
-        */
+        
+        game.load.image('whiteball', 'assets/whiteball.png');
+        game.load.image('blackball', 'assets/blackball.png');
+        game.load.image('blueball', 'assets/blueball.png');
+        game.load.image('redball', 'assets/redball.png');
+        game.load.image('table','assets/table.png');
+        game.load.image('stick','assets/stick.png');
+        
        // Load a new asset that we will use in the menu state
-        game.load.image('menuTitle', 'img/menuTitle.png');
-        game.load.image('8ballpool', 'img/8ballpool.png');
-    },
-    create: function () {
-        // Go to the menu state
-        //game.state.start('menu');
+        game.load.image('menuTitle', 'assets/menuTitle.png');
+        game.load.image('8ballpool', 'assets/8ballpool.png');
+        game.load.spritesheet('button', 'assets/button_sprite_sheet.png', 193, 71);
     },
     update: function(){
-        if(loadingLabel.alpha>0){
-            loadingLabel.alpha -= 0.01;
-            progressBar.alpha -= 0.01;
-        }
-        else{
-            game.state.start('menu');
-        }
+        game.state.start('menu');
     }
 }; 
