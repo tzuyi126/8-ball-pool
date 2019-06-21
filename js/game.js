@@ -8,6 +8,7 @@ game.state.add('load', loadState);
 game.state.add('menu', menuState);
 game.state.add('guide', guideState);
 game.state.add('play', playState);
-game.state.add('over', overState);
+game.state.add('bluewin', bluewinState);
+game.state.add('redwin', redwinState);
 // Start the 'boot' state
 game.state.start('boot');

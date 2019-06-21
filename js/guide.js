@@ -58,14 +58,15 @@ var guideState = {
         }
         else{
            //text
+           var speed = 3;
             if(textTitle.x<game.width/2)
-                textTitle.x += 1.5;
+                textTitle.x += speed;
             if(text.x<game.width/2)
-                text.x += 1.5;
+                text.x += speed;
             if(text1.x<game.width/2)
-                text1.x += 1.5;
+                text1.x += speed;
             if(text11.x<game.width/2)
-                text11.x += 1.5;
+                text11.x += speed;
 
             if(textTitle.alpha<1)
                 textTitle.alpha +=0.01;

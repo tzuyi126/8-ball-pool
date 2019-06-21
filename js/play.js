@@ -3,11 +3,15 @@ var bounds;
 var dir = 1;
 var blueLeft = 7;
 var redLeft = 7;
-var turn = 1;//blue first
+var turn;//blue false red true
+var playerIsSet = false;
+var textDisplayed = false;
 var playState = {
 
     create: function () {
         this.add.image(12, 20, 'table');
+        this.bgmusic=game.add.audio('bgmusic');
+        this.bgmusic.play();
 
         bounds = new Phaser.Rectangle(50, 57, 925, 475);
         game.physics.startSystem(Phaser.Physics.P2JS);
@@ -79,8 +83,10 @@ var playState = {
 
         //stick power
         this.power = 0;
-        this.isShooting = false;
-        this.still_moving = false;
+
+        this.text = game.add.text(game.width/2, game.height / 2-120, 'You are REDBALL player!', { font: '28px Arial', fill: 'white', align: "center" });
+        this.text.alpha = 0;
+        this.text.anchor.setTo(0.5, 0.5);
 
         //  Just to display the bounds
         // var graphics = game.add.graphics(bounds.x, bounds.y);
@@ -125,20 +131,29 @@ var playState = {
         var moving = this.checkmoving();
 
         // check goal
-        this.goal(this.whiteball);
-        this.goal(this.blackball);
+        var uselsee = this.checkGoal(this.whiteball);
+        useless = this.checkGoal(this.blackball);
         for (var i = 0; i < 7; i++) {
             if (this.blueball[i].alive) {
                 blueLeft -= 1;
-                this.goal(this.blueball[i]);
+                this.bluePotted = this.checkGoal(this.blueball[i]);
+                if(this.bluePotted && !playerIsSet){
+                    playerIsSet = true;
+                    turn = false;
+                }
             }
         }
         for (var i = 0; i < 7; i++) {
             if (this.redball[i].alive) {
                 redLeft -= 1;
-                this.goal(this.redball[i]);
+                this.redPotted = this.checkGoal(this.redball[i]);
+                if(this.redPotted && !playerIsSet){
+                    playerIsSet = true;
+                    turn = true;
+                }
             }
         }
+        this.PIStext();
 
         if (game.input.activePointer.leftButton.isDown && moving == 0) {
             if (this.whiteball.alive) {
@@ -290,19 +305,19 @@ var playState = {
             return 1;
         } else return 0;
     },
-    goal: function (ball) {
-        var dis = 20;
+    checkGoal: function (ball) {
+        var dis = 18;
         var disable = 0;
-        if (Math.abs(ball.x - bounds.x) <= dis + 5 && Math.abs(ball.y - bounds.y) <= dis + 5) {
+        if (Math.abs(ball.x - bounds.x) <= dis + 11 && Math.abs(ball.y - bounds.y) <= dis + 11) {
             disable = 1;
         }
-        else if (Math.abs(ball.x - bounds.x - bounds.width) <= dis + 5 && Math.abs(ball.y - bounds.y) <= dis + 5) {
+        else if (Math.abs(ball.x - bounds.x - bounds.width) <= dis + 11 && Math.abs(ball.y - bounds.y) <= dis + 11) {
             disable = 1;
         }
-        else if (Math.abs(ball.x - bounds.x - bounds.width) <= dis + 5 && Math.abs(ball.y - bounds.y - bounds.height) <= dis + 5) {
+        else if (Math.abs(ball.x - bounds.x - bounds.width) <= dis + 11 && Math.abs(ball.y - bounds.y - bounds.height) <= dis + 11) {
             disable = 1;
         }
-        else if (Math.abs(ball.x - bounds.x) <= dis + 5 && Math.abs(ball.y - bounds.y - bounds.height) <= dis + 5) {
+        else if (Math.abs(ball.x - bounds.x) <= dis + 11 && Math.abs(ball.y - bounds.y - bounds.height) <= dis + 11) {
             disable = 1;
         }
         else if (Math.abs(ball.x - bounds.x - bounds.width / 2) <= dis && Math.abs(ball.y - bounds.y) <= dis) {
@@ -311,15 +326,19 @@ var playState = {
         else if (Math.abs(ball.x - bounds.x - bounds.width / 2) <= dis && Math.abs(ball.y - bounds.y - bounds.height) <= dis) {
             disable = 1;
         }
+
         if (disable == 1) {
-            this.goalsound.play();
             ball.kill();
+            this.goalsound.play();
+            return true;
         }
+        return false;
     },
     checkEnd: function () {
-        if (!this.blackball.alive && moving == 0) game.state.start('over');
-        //// turn 1 == blue turn, turn 2 == red turn
-        // if (turn == 1) {
+        var moving = this.checkmoving();
+        if (!this.blackball.alive && moving == 0) game.state.start('redwin');
+        //// turn false == blue turn, turn true == red turn
+        // if (!turn) {
         //     if (blueLeft == 0) {
         //         if (!this.blackball.alive && moving == 0) {
         //             if (this.whiteball.alive) {
@@ -348,5 +367,26 @@ var playState = {
         //         }
         //     }
         // }
+    },
+    PIStext: function(){
+        // player is set text
+        if(playerIsSet){
+            if(textDisplayed){
+                if(this.text.alpha>0){
+                    this.text.alpha -= 0.005;
+                }
+            }
+            else{
+                textDisplayed = 1;
+                if(!turn){
+                    this.text.setText('You are BLUEBALL player!');
+                    this.text.alpha = 1;
+                }
+                else{
+                    this.text.setText('You are REDBALL player!');
+                    this.text.alpha = 1;
+                }
+            }
+        }
     }
 }

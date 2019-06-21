@@ -22,6 +22,7 @@ var loadState = {
         game.load.image('stick','assets/stick.png');
         game.load.audio('collide', [ 'assets/hitWhiteBall.mp3', 'assets/hitWhiteBall.ogg' ]);
         game.load.audio('goal', [ 'assets/goal.mp3', 'assets/goal.ogg' ]);
+        game.load.audio('bgmusic', [ 'assets/bgmusic.mp3', 'assets/bgmusic.ogg' ]);
         
        // Load a new asset that we will use in the menu state
         game.load.image('menuTitle', 'assets/menuTitle.png');
