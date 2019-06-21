@@ -13,6 +13,9 @@ var playState = {
         game.physics.startSystem(Phaser.Physics.P2JS);
         game.physics.p2.restitution = 0.9;
 
+        this.collidesound=game.add.audio('collide');
+        this.goalsound=game.add.audio('goal');
+
         balls = game.add.physicsGroup(Phaser.Physics.P2JS);
 
         this.whiteball = balls.create(bounds.x + bounds.width / 4 + 5, bounds.y + bounds.height / 2, 'whiteball');
@@ -193,6 +196,9 @@ var playState = {
         if (moving == 0) {
             this.whiteball.body.velocity.x = this.power * Math.cos(this.stick.rotation);
             this.whiteball.body.velocity.y = this.power * Math.sin(this.stick.rotation);
+            if(this.power!=0){
+                this.collidesound.play();
+            }
             this.power = 0;
             this.stick.anchor.x = 1.048;
         }
@@ -306,6 +312,7 @@ var playState = {
             disable = 1;
         }
         if (disable == 1) {
+            this.goalsound.play();
             ball.kill();
         }
     },
