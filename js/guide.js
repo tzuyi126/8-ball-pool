@@ -20,21 +20,21 @@ var guideState = {
         logoimg.anchor.setTo(0.5,0.5);
 
         //text
-        textTitle = game.add.text(250,game.height/2-70,'-How to Play-',{font: '28px Arial', fill: 'white'});
+        textTitle = game.add.text(250,game.height/2-90,'-How to Play-',{font: '28px Arial', fill: 'white'});
         textTitle.alpha = 0;
         textTitle.anchor.setTo(0.5,0.5);
 
-        text = game.add.text(230,game.height/2-30,'Use Mouse to control the cue stick,',{font: '28px Arial', fill: 'white', align: "center"});
+        text = game.add.text(230,game.height/2-50,'Use Mouse to control the cue stick,',{font: '28px Arial', fill: 'white', align: "center"});
         text.alpha = 0;
         text.anchor.setTo(0.5,0.5);
         text.addColor('#ffff00', 4);
         text.addColor('white', 10);
 
-        text1 = game.add.text(210,game.height/2+10,'and hit your balls into holes',{font: '28px Arial', fill: 'white', align: "center"});
+        text1 = game.add.text(210,game.height/2-10,'and hit your balls into holes',{font: '28px Arial', fill: 'white', align: "center"});
         text1.alpha = 0;
         text1.anchor.setTo(0.5,0.5);
 
-        text11 = game.add.text(190,game.height/2+50,'until all of the balls are in the holes.',{font: '28px Arial', fill: 'white', align: "center"});
+        text11 = game.add.text(190,game.height/2+30,'until all of the balls are in the holes.',{font: '28px Arial', fill: 'white', align: "center"});
         text11.alpha = 0;
         text11.anchor.setTo(0.5,0.5);
 
@@ -51,21 +51,21 @@ var guideState = {
     update:function(){
         //title
         if(logoimg.x >300){
-            logoimg.x -= 4;
-            logoimg.y -= 2;
-            logopic.x += 5;
-            logopic.y += 1;
+            logoimg.x -= 10;
+            logoimg.y -= 6;
+            logopic.x += 11;
+            logopic.y += 2;
         }
         else{
            //text
             if(textTitle.x<game.width/2)
-                textTitle.x += 1.5;
+                textTitle.x += 7;
             if(text.x<game.width/2)
-                text.x += 1.5;
+                text.x += 7;
             if(text1.x<game.width/2)
-                text1.x += 1.5;
+                text1.x += 7;
             if(text11.x<game.width/2)
-                text11.x += 1.5;
+                text11.x += 7;
 
             if(textTitle.alpha<1)
                 textTitle.alpha +=0.01;
