@@ -1,7 +1,9 @@
 var customBounds;
 var bounds;
 var dir = 1;
-
+var blueLeft = 7;
+var redLeft = 7;
+var turn = 1;//blue first
 var playState = {
 
     create: function () {
@@ -23,44 +25,43 @@ var playState = {
         this.bluecount = 0;
         this.j = 0;
 
-        for(var i=0;i<=this.j;i++){
-            var red_or_blue=game.rnd.pick([0,1]);
-            
-            if(this.j==2&&i==1){
-                this.blackball = balls.create(740+this.j*25,  293-12.5*this.j+25*i, 'blackball');//800,293
+        for (var i = 0; i <= this.j; i++) {
+            var red_or_blue = game.rnd.pick([0, 1]);
+
+            if (this.j == 2 && i == 1) {
+                this.blackball = balls.create(740 + this.j * 25, 293 - 12.5 * this.j + 25 * i, 'blackball');//800,293
                 this.blackball.anchor.setTo(0.5, 0.5);
                 this.blackball.body.setCircle(12.5);
 
-            }else if(this.j==4&&i==0){
-                this.redball[6] = balls.create(740 + this.j * 25, 293-12.5*this.j+25*i, 'redball');
-                    this.redball[6].anchor.setTo(0.5, 0.5);
-                    this.redball[6].body.setCircle(12.5);
+            } else if (this.j == 4 && i == 0) {
+                this.redball[6] = balls.create(740 + this.j * 25, 293 - 12.5 * this.j + 25 * i, 'redball');
+                this.redball[6].anchor.setTo(0.5, 0.5);
+                this.redball[6].body.setCircle(12.5);
 
-            }else if(this.j==4&&i==4){
-                this.blueball[6] = balls.create(740+this.j*25,  293-12.5*this.j+25*i, 'blueball');
-                    this.blueball[6].anchor.setTo(0.5, 0.5);
-                    this.blueball[6].body.setCircle(12.5);
+            } else if (this.j == 4 && i == 4) {
+                this.blueball[6] = balls.create(740 + this.j * 25, 293 - 12.5 * this.j + 25 * i, 'blueball');
+                this.blueball[6].anchor.setTo(0.5, 0.5);
+                this.blueball[6].body.setCircle(12.5);
 
-            }else{
-                if((this.redcount<6&&red_or_blue==0)||this.bluecount==6){
+            } else {
+                if ((this.redcount < 6 && red_or_blue == 0) || this.bluecount == 6) {
 
-                    this.redball[this.redcount] = balls.create(740 + this.j * 25, 293-12.5*this.j+25*i, 'redball');
+                    this.redball[this.redcount] = balls.create(740 + this.j * 25, 293 - 12.5 * this.j + 25 * i, 'redball');
                     this.redball[this.redcount].anchor.setTo(0.5, 0.5);
                     this.redball[this.redcount].body.setCircle(12.5);
-                    this.redcount+=1;
-                }
-                else if(this.bluecount<6&&red_or_blue==1||this.redcount==6){
-                    this.blueball[this.bluecount] = balls.create(740+this.j*25,  293-12.5*this.j+25*i, 'blueball');
+                    this.redcount += 1;
+                } else if (this.bluecount < 6 && red_or_blue == 1 || this.redcount == 6) {
+                    this.blueball[this.bluecount] = balls.create(740 + this.j * 25, 293 - 12.5 * this.j + 25 * i, 'blueball');
                     this.blueball[this.bluecount].anchor.setTo(0.5, 0.5);
                     this.blueball[this.bluecount].body.setCircle(12.5);
-                    this.bluecount+=1;
+                    this.bluecount += 1;
                 }
             }
-            if(i==this.j){
-                this.j+=1;
-                i=-1;
+            if (i == this.j) {
+                this.j += 1;
+                i = -1;
             }
-            if(this.j==5)break;
+            if (this.j == 5) break;
 
         }
 
@@ -116,7 +117,7 @@ var playState = {
 
     },
     update: function () {
-        if(!this.blackball.alive)   game.state.start('over');
+        this.checkEnd();
 
         var moving = this.checkmoving();
 
@@ -125,11 +126,13 @@ var playState = {
         this.goal(this.blackball);
         for (var i = 0; i < 7; i++) {
             if (this.blueball[i].alive) {
+                blueLeft -= 1;
                 this.goal(this.blueball[i]);
             }
         }
         for (var i = 0; i < 7; i++) {
             if (this.redball[i].alive) {
+                redLeft -= 1;
                 this.goal(this.redball[i]);
             }
         }
@@ -140,17 +143,14 @@ var playState = {
                     if (this.power < 2000) {
                         this.power += 20;
                         this.stick.anchor.x += 0.004;
-                    }
-                    else {
+                    } else {
                         dir = 0;
                     }
-                }
-                else {
+                } else {
                     if (this.power > 0) {
                         this.power -= 20;
                         this.stick.anchor.x -= 0.004;
-                    }
-                    else {
+                    } else {
                         dir = 1;
                     }
                 }
@@ -311,9 +311,41 @@ var playState = {
         else if (Math.abs(ball.x - bounds.x - bounds.width / 2) <= dis && Math.abs(ball.y - bounds.y - bounds.height) <= dis) {
             disable = 1;
         }
-
         if (disable == 1) {
             ball.kill();
         }
+    },
+    checkEnd: function () {
+        if (!this.blackball.alive && moving == 0) game.state.start('over');
+        //// turn 1 == blue turn, turn 2 == red turn
+        // if (turn == 1) {
+        //     if (blueLeft == 0) {
+        //         if (!this.blackball.alive && moving == 0) {
+        //             if (this.whiteball.alive) {
+        //                 game.state.start('blueWon');
+        //             } else game.state.start('redWon');
+        //         }
+        //     } else {
+        //         if (!this.blackball.alive && moving == 0) {
+        //             if (this.whiteball.alive) {
+        //                 game.state.start('redWon');
+        //             } else game.state.start('blueWon');
+        //         }
+        //     }
+        // } else {
+        //     if (redLeft == 0) {
+        //         if (!this.blackball.alive && moving == 0) {
+        //             if (this.whiteball.alive) {
+        //                 game.state.start('redWon');
+        //             } else game.state.start('blueWon');
+        //         }
+        //     } else {
+        //         if (!this.blackball.alive && moving == 0) {
+        //             if (this.whiteball.alive) {
+        //                 game.state.start('blueWon');
+        //             } else game.state.start('redWon');
+        //         }
+        //     }
+        // }
     }
 }
