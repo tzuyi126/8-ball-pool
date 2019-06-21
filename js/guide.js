@@ -34,7 +34,7 @@ var guideState = {
         text1.alpha = 0;
         text1.anchor.setTo(0.5,0.5);
 
-        text11 = game.add.text(190,game.height/2+50,'until all of the balls are in the holes.',{font: '28px Arial', fill: 'white', align: "center"});
+        text11 = game.add.text(190,game.height/2+50,'until all of your balls are in the holes.',{font: '28px Arial', fill: 'white', align: "center"});
         text11.alpha = 0;
         text11.anchor.setTo(0.5,0.5);
 

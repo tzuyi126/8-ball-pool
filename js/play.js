@@ -6,6 +6,7 @@ var playState = {
         this.add.image(12, 20, 'table');
         this.bgmusic = game.add.audio('bgmusic');
         this.bgmusic.play();
+        this.bgmusic.loop = true;
 
         bounds = new Phaser.Rectangle(50, 57, 925, 475);
         game.physics.startSystem(Phaser.Physics.P2JS);
@@ -30,6 +31,7 @@ var playState = {
         this.bluecount = 0;
         this.j = 0;
 
+        ////set balls
         for (var i = 0; i <= this.j; i++) {
             var red_or_blue = game.rnd.pick([0, 1]);
 
@@ -86,6 +88,10 @@ var playState = {
         this.text.alpha = 0;
         this.text.anchor.setTo(0.5, 0.5);
 
+        this.textTurn = game.add.text(game.width / 2, game.height / 2 , "REDBALL player's turn!", { font: '28px Arial', fill: 'white', align: "center" });
+        this.textTurn.alpha = 0;
+        this.textTurn.anchor.setTo(0.5, 0.5);
+
         //  Just to display the bounds
         // var graphics = game.add.graphics(bounds.x, bounds.y);
         // graphics.lineStyle(4, 0xffd900, 1);
@@ -93,6 +99,11 @@ var playState = {
 
         // MOUSE
         game.input.mouse.capture = true;
+
+        this.B = game.input.keyboard.addKey(Phaser.Keyboard.B);
+        this.B.onDown.add(this.killBlue, this);
+        this.R = game.input.keyboard.addKey(Phaser.Keyboard.R);
+        this.R.onDown.add(this.killRed, this);
     },
     createPreviewBounds: function (x, y, w, h) {
 
@@ -127,14 +138,12 @@ var playState = {
         this.checkEnd();
 
         var moving = this.checkmoving();
-        console.log(moving);
 
         // check goal
         if (this.whiteball.alive) var uselsee = this.checkGoal(this.whiteball);
         if (this.blackball.alive) useless = this.checkGoal(this.blackball);
         for (var i = 0; i < 7; i++) {
             if (this.blueball[i].alive) {
-                this.blueLeft -= 1;
                 this.bluePotted = this.checkGoal(this.blueball[i]);
                 if (this.bluePotted && !this.playerIsSet) {
                     this.playerIsSet = true;
@@ -143,11 +152,13 @@ var playState = {
                 if (!this.turn && this.bluePotted) {
                     this.scored = true;
                 }
+                if(this.bluePotted){
+                    this.blueLeft -= 1;
+                }
             }
         }
         for (var i = 0; i < 7; i++) {
             if (this.redball[i].alive) {
-                this.redLeft -= 1;
                 this.redPotted = this.checkGoal(this.redball[i]);
                 if (this.redPotted && !this.playerIsSet) {
                     this.playerIsSet = true;
@@ -156,22 +167,25 @@ var playState = {
                 if (this.turn && this.redPotted) {
                     this.scored = true;
                 }
+                if(this.redPotted){
+                    this.redLeft -= 1;
+                }
             }
         }
         this.PIStext();
 
         var opposite = game.input.y - this.stick.position.y;
         var adjacent = game.input.x - this.stick.position.x;
-        ////check ending
-        if (game.input.activePointer.rightButton.isDown) {
-            game.state.start("redwin");
-            this.bgmusic.destroy();
-        }
 
         if (moving == 0) {
+
+            if(this.turn==this.nextTurn){
+                this.turnDisplayed = true;
+            }
+            
             this.turn = this.nextTurn;
-            // if (this.turn) console.log("red")
-            // else console.log("blue");
+            this.turnText();
+
             if (this.whiteball.alive) {
                 if (game.input.activePointer.leftButton.isDown) {
                     if (this.dir == 1) {
@@ -204,6 +218,7 @@ var playState = {
         } else {
             this.ballmoving();
             this.setnextTurn();
+            this.turnDisplayed = false;
         }
     },
     setnextTurn: function() {
@@ -407,5 +422,42 @@ var playState = {
                 }
             }
         }
+    },
+    turnText: function () {
+        if (this.playerIsSet) {
+            if (this.turnDisplayed) {
+                if (this.time > 0) {
+                    this.time -= 0.02;
+                }
+                else{
+                    this.textTurn.alpha = 0;
+                }
+            }
+            else{
+                this.turnDisplayed = true;
+                if (!this.turn) {
+                    this.textTurn.setText("BLUEBALL player's turn!");
+                    this.textTurn.alpha = 1;
+                    this.time = 1;
+                }
+                else {
+                    this.textTurn.setText("REDBALL player's turn!");
+                    this.textTurn.alpha = 1;
+                    this.time = 1;
+                }
+            }
+        }
+    }, 
+    killBlue: function(){
+        for(var i = 0; i < 7; i++){
+            if(this.blueball[i].alive)this.blueball[i].kill();
+        }
+        this.blueLeft = 0;
+    },
+    killRed: function(){
+        for(var i = 0; i < 7; i++){
+            if(this.redball[i].alive)this.redball[i].kill();
+        }
+        this.redLeft = 0;
     }
 }
