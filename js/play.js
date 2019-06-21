@@ -140,19 +140,13 @@ var playState = {
         if (game.input.activePointer.leftButton.isDown && moving == 0) {
             if (this.whiteball.alive) {
                 if (dir == 1) {
-                    if (this.power < 2000) {
+                    if (this.power == 2000) dir = 0;
                         this.power += 20;
                         this.stick.anchor.x += 0.004;
-                    } else {
-                        dir = 0;
-                    }
                 } else {
-                    if (this.power > 0) {
+                    if (this.power == 0) dir = 1;
                         this.power -= 20;
                         this.stick.anchor.x -= 0.004;
-                    } else {
-                        dir = 1;
-                    }
                 }
             }
         } else {
