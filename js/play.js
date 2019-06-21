@@ -10,15 +10,15 @@ var playState = {
 
     create: function () {
         this.add.image(12, 20, 'table');
-        this.bgmusic=game.add.audio('bgmusic');
+        this.bgmusic = game.add.audio('bgmusic');
         this.bgmusic.play();
 
         bounds = new Phaser.Rectangle(50, 57, 925, 475);
         game.physics.startSystem(Phaser.Physics.P2JS);
         game.physics.p2.restitution = 0.9;
 
-        this.collidesound=game.add.audio('collide');
-        this.goalsound=game.add.audio('goal');
+        this.collidesound = game.add.audio('collide');
+        this.goalsound = game.add.audio('goal');
 
         balls = game.add.physicsGroup(Phaser.Physics.P2JS);
 
@@ -84,7 +84,7 @@ var playState = {
         //stick power
         this.power = 0;
 
-        this.text = game.add.text(game.width/2, game.height / 2-120, 'You are REDBALL player!', { font: '28px Arial', fill: 'white', align: "center" });
+        this.text = game.add.text(game.width / 2, game.height / 2 - 120, 'You are REDBALL player!', { font: '28px Arial', fill: 'white', align: "center" });
         this.text.alpha = 0;
         this.text.anchor.setTo(0.5, 0.5);
 
@@ -137,7 +137,7 @@ var playState = {
             if (this.blueball[i].alive) {
                 blueLeft -= 1;
                 this.bluePotted = this.checkGoal(this.blueball[i]);
-                if(this.bluePotted && !playerIsSet){
+                if (this.bluePotted && !playerIsSet) {
                     playerIsSet = true;
                     turn = false;
                 }
@@ -147,7 +147,7 @@ var playState = {
             if (this.redball[i].alive) {
                 redLeft -= 1;
                 this.redPotted = this.checkGoal(this.redball[i]);
-                if(this.redPotted && !playerIsSet){
+                if (this.redPotted && !playerIsSet) {
                     playerIsSet = true;
                     turn = true;
                 }
@@ -155,32 +155,40 @@ var playState = {
         }
         this.PIStext();
 
-        if (game.input.activePointer.leftButton.isDown && moving == 0) {
-            if (this.whiteball.alive) {
-                if (dir == 1) {
-                    if (this.power == 2000) dir = 0;
-                        this.power += 20;
-                        this.stick.anchor.x += 0.004;
-                } else {
-                    if (this.power == 0) dir = 1;
-                        this.power -= 20;
-                        this.stick.anchor.x -= 0.004;
-                }
-            }
-        } else {
-            if (!this.whiteball.alive && moving == 0) {
-                this.whiteball.reset(bounds.x + bounds.width / 4 + 5, bounds.y + bounds.height / 2);
-            }
-            this.ballmoving();
-        }
-
         var opposite = game.input.y - this.stick.position.y;
         var adjacent = game.input.x - this.stick.position.x;
+
         if (moving == 0) {
+            if (this.whiteball.alive) {
+                if (game.input.activePointer.leftButton.isDown) {
+                    if (dir == 1) {
+                        if (this.power == 2000) dir = 0;
+                        this.power += 20;
+                        this.stick.anchor.x += 0.004;
+                    } else {
+                        if (this.power == 0) dir = 1;
+                        this.power -= 20;
+                        this.stick.anchor.x -= 0.004;
+                    }
+
+                } else {
+                    this.whiteball.body.velocity.x = this.power * Math.cos(this.stick.rotation);
+                    this.whiteball.body.velocity.y = this.power * Math.sin(this.stick.rotation);
+                    if (this.power != 0) {
+                        this.collidesound.play();
+                    }
+                    this.power = 0;
+                    this.stick.anchor.x = 1.048;
+                }
+            } else {
+                this.whiteball.reset(bounds.x + bounds.width / 4 + 5, bounds.y + bounds.height / 2);
+            }
             this.stick.rotation = Math.atan2(opposite, adjacent);
             this.stick.x = this.whiteball.x;
             this.stick.y = this.whiteball.y;
             this.stick.alpha = 1;
+        } else {
+            this.ballmoving();
         }
 
     },
@@ -206,93 +214,81 @@ var playState = {
         return 0;
     },
     ballmoving: function () {
-        var moving = this.checkmoving();
-
-        if (moving == 0) {
-            this.whiteball.body.velocity.x = this.power * Math.cos(this.stick.rotation);
-            this.whiteball.body.velocity.y = this.power * Math.sin(this.stick.rotation);
-            if(this.power!=0){
-                this.collidesound.play();
+        //whiteball move when alive
+        this.stick.alpha -= 0.02;
+        if (this.whiteball.alive) {
+            if (this.stopSensor(this.whiteball) == 1) {
+                this.whiteball.body.velocity.x = 0;
+                this.whiteball.body.velocity.y = 0;
             }
-            this.power = 0;
-            this.stick.anchor.x = 1.048;
+            if (Math.abs(this.whiteball.body.velocity.x) > 0) {
+                this.whiteball.body.velocity.x *= 0.99;
+            } else {
+                this.whiteball.body.velocity.x = 0;
+            }
+            if (Math.abs(this.whiteball.body.velocity.y) > 0) {
+                this.whiteball.body.velocity.y *= 0.99;
+            } else {
+                this.whiteball.body.velocity.y = 0;
+            }
         }
-        else {
-            //whiteball move when alive
-            this.stick.alpha -= 0.02;
-            if (this.whiteball.alive) {
-                if (this.stopSensor(this.whiteball) == 1) {
-                    this.whiteball.body.velocity.x = 0;
-                    this.whiteball.body.velocity.y = 0;
-                }
-                if (Math.abs(this.whiteball.body.velocity.x) > 0) {
-                    this.whiteball.body.velocity.x *= 0.99;
-                } else {
-                    this.whiteball.body.velocity.x = 0;
-                }
-                if (Math.abs(this.whiteball.body.velocity.y) > 0) {
-                    this.whiteball.body.velocity.y *= 0.99;
-                } else {
-                    this.whiteball.body.velocity.y = 0;
-                }
+        // blackball
+        if (this.blackball.alive) {
+            if (this.stopSensor(this.blackball) == 1) {
+                this.blackball.body.velocity.x = 0;
+                this.blackball.body.velocity.y = 0;
             }
-            // blackball
-            if (this.blackball.alive) {
-                if (this.stopSensor(this.blackball) == 1) {
-                    this.blackball.body.velocity.x = 0;
-                    this.blackball.body.velocity.y = 0;
-                }
-                if (Math.abs(this.blackball.body.velocity.x) > 0) {
-                    this.blackball.body.velocity.x *= 0.99;
-                } else {
-                    this.blackball.body.velocity.x = 0;
-                }
-                if (Math.abs(this.blackball.body.velocity.y) > 0) {
-                    this.blackball.body.velocity.y *= 0.99;
-                } else {
-                    this.blackball.body.velocity.y = 0;
-                }
+            if (Math.abs(this.blackball.body.velocity.x) > 0) {
+                this.blackball.body.velocity.x *= 0.99;
+            } else {
+                this.blackball.body.velocity.x = 0;
             }
+            if (Math.abs(this.blackball.body.velocity.y) > 0) {
+                this.blackball.body.velocity.y *= 0.99;
+            } else {
+                this.blackball.body.velocity.y = 0;
+            }
+        }
 
-            //blueball
-            for (var i = 0; i < 7; i++) {
-                if (this.blueball[i].alive) {
-                    if (this.stopSensor(this.blueball[i]) == 1) {
-                        this.blueball[i].body.velocity.x = 0;
-                        this.blueball[i].body.velocity.y = 0;
-                    }
-                    if (Math.abs(this.blueball[i].body.velocity.x) > 0) {
-                        this.blueball[i].body.velocity.x *= 0.99;
-                    } else {
-                        this.blueball[i].body.velocity.x = 0;
-                    }
-                    if (Math.abs(this.blueball[i].body.velocity.y) > 0) {
-                        this.blueball[i].body.velocity.y *= 0.99;
-                    } else {
-                        this.blueball[i].body.velocity.y = 0;
-                    }
+        //blueball
+        for (var i = 0; i < 7; i++) {
+            if (this.blueball[i].alive) {
+                if (this.stopSensor(this.blueball[i]) == 1) {
+                    this.blueball[i].body.velocity.x = 0;
+                    this.blueball[i].body.velocity.y = 0;
                 }
-            }
-            //redball
-            for (var i = 0; i < 7; i++) {
-                if (this.redball[i].alive) {
-                    if (this.stopSensor(this.redball[i]) == 1) {
-                        this.redball[i].body.velocity.x = 0;
-                        this.redball[i].body.velocity.y = 0;
-                    }
-                    if (Math.abs(this.redball[i].body.velocity.x) > 0) {
-                        this.redball[i].body.velocity.x *= 0.99;
-                    } else {
-                        this.redball[i].body.velocity.x = 0;
-                    }
-                    if (Math.abs(this.redball[i].body.velocity.y) > 0) {
-                        this.redball[i].body.velocity.y *= 0.99;
-                    } else {
-                        this.redball[i].body.velocity.y = 0;
-                    }
+                if (Math.abs(this.blueball[i].body.velocity.x) > 0) {
+                    this.blueball[i].body.velocity.x *= 0.99;
+                } else {
+                    this.blueball[i].body.velocity.x = 0;
+                }
+                if (Math.abs(this.blueball[i].body.velocity.y) > 0) {
+                    this.blueball[i].body.velocity.y *= 0.99;
+                } else {
+                    this.blueball[i].body.velocity.y = 0;
                 }
             }
         }
+        //redball
+        for (var i = 0; i < 7; i++) {
+            if (this.redball[i].alive) {
+                if (this.stopSensor(this.redball[i]) == 1) {
+                    this.redball[i].body.velocity.x = 0;
+                    this.redball[i].body.velocity.y = 0;
+                }
+                if (Math.abs(this.redball[i].body.velocity.x) > 0) {
+                    this.redball[i].body.velocity.x *= 0.99;
+                } else {
+                    this.redball[i].body.velocity.x = 0;
+                }
+                if (Math.abs(this.redball[i].body.velocity.y) > 0) {
+                    this.redball[i].body.velocity.y *= 0.99;
+                } else {
+                    this.redball[i].body.velocity.y = 0;
+                }
+            }
+        }
+
     },
     ballspeedsqr: function (x, y) {
         return Math.pow(x, 2) * Math.pow(y, 2);
@@ -336,53 +332,52 @@ var playState = {
     },
     checkEnd: function () {
         var moving = this.checkmoving();
-        if (!this.blackball.alive && moving == 0) game.state.start('redwin');
-        //// turn false == blue turn, turn true == red turn
-        // if (!turn) {
-        //     if (blueLeft == 0) {
-        //         if (!this.blackball.alive && moving == 0) {
-        //             if (this.whiteball.alive) {
-        //                 game.state.start('blueWon');
-        //             } else game.state.start('redWon');
-        //         }
-        //     } else {
-        //         if (!this.blackball.alive && moving == 0) {
-        //             if (this.whiteball.alive) {
-        //                 game.state.start('redWon');
-        //             } else game.state.start('blueWon');
-        //         }
-        //     }
-        // } else {
-        //     if (redLeft == 0) {
-        //         if (!this.blackball.alive && moving == 0) {
-        //             if (this.whiteball.alive) {
-        //                 game.state.start('redWon');
-        //             } else game.state.start('blueWon');
-        //         }
-        //     } else {
-        //         if (!this.blackball.alive && moving == 0) {
-        //             if (this.whiteball.alive) {
-        //                 game.state.start('blueWon');
-        //             } else game.state.start('redWon');
-        //         }
-        //     }
-        // }
+        // turn false == blue turn, turn true == red turn
+        if (!turn) {
+            if (blueLeft == 0) {
+                if (!this.blackball.alive && moving == 0) {
+                    if (this.whiteball.alive) {
+                        game.state.start('bluewin');
+                    } else game.state.start('redwin');
+                }
+            } else {
+                if (!this.blackball.alive && moving == 0) {
+                    if (this.whiteball.alive) {
+                        game.state.start('redwin');
+                    } else game.state.start('bluewin');
+                }
+            }
+        } else {
+            if (redLeft == 0) {
+                if (!this.blackball.alive && moving == 0) {
+                    if (this.whiteball.alive) {
+                        game.state.start('redwin');
+                    } else game.state.start('bluewin');
+                }
+            } else {
+                if (!this.blackball.alive && moving == 0) {
+                    if (this.whiteball.alive) {
+                        game.state.start('bluewin');
+                    } else game.state.start('redwin');
+                }
+            }
+        }
     },
-    PIStext: function(){
+    PIStext: function () {
         // player is set text
-        if(playerIsSet){
-            if(textDisplayed){
-                if(this.text.alpha>0){
+        if (playerIsSet) {
+            if (textDisplayed) {
+                if (this.text.alpha > 0) {
                     this.text.alpha -= 0.005;
                 }
             }
-            else{
+            else {
                 textDisplayed = 1;
-                if(!turn){
+                if (!turn) {
                     this.text.setText('You are BLUEBALL player!');
                     this.text.alpha = 1;
                 }
-                else{
+                else {
                     this.text.setText('You are REDBALL player!');
                     this.text.alpha = 1;
                 }
