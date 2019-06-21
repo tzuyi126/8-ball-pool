@@ -4,6 +4,7 @@ var redwinState = {
     },
 
     create: function() {
+
         //background
         game.add.image(0,0,'menuBack');
 

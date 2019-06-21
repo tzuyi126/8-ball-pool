@@ -1,11 +1,5 @@
 var customBounds;
 var bounds;
-var dir = 1;
-var blueLeft = 7;
-var redLeft = 7;
-var turn;//blue false red true
-var playerIsSet = false;
-var textDisplayed = false;
 var playState = {
 
     create: function () {
@@ -26,8 +20,12 @@ var playState = {
         this.whiteball.anchor.setTo(0.5, 0.5);
         this.whiteball.body.setCircle(12.5);
 
+        this.playerIsSet = false;
+        this.textDisplayed = false;
         this.blueball = [];
+        this.blueLeft = 7;
         this.redball = [];
+        this.redLeft = 7;
         this.redcount = 0;
         this.bluecount = 0;
         this.j = 0;
@@ -129,27 +127,34 @@ var playState = {
         this.checkEnd();
 
         var moving = this.checkmoving();
+        console.log(moving);
 
         // check goal
-        var uselsee = this.checkGoal(this.whiteball);
-        useless = this.checkGoal(this.blackball);
+        if (this.whiteball.alive) var uselsee = this.checkGoal(this.whiteball);
+        if (this.blackball.alive) useless = this.checkGoal(this.blackball);
         for (var i = 0; i < 7; i++) {
             if (this.blueball[i].alive) {
-                blueLeft -= 1;
+                this.blueLeft -= 1;
                 this.bluePotted = this.checkGoal(this.blueball[i]);
-                if (this.bluePotted && !playerIsSet) {
-                    playerIsSet = true;
-                    turn = false;
+                if (this.bluePotted && !this.playerIsSet) {
+                    this.playerIsSet = true;
+                    this.turn = false;
+                }
+                if (!this.turn && this.bluePotted) {
+                    this.scored = true;
                 }
             }
         }
         for (var i = 0; i < 7; i++) {
             if (this.redball[i].alive) {
-                redLeft -= 1;
+                this.redLeft -= 1;
                 this.redPotted = this.checkGoal(this.redball[i]);
-                if (this.redPotted && !playerIsSet) {
-                    playerIsSet = true;
-                    turn = true;
+                if (this.redPotted && !this.playerIsSet) {
+                    this.playerIsSet = true;
+                    this.turn = true;
+                }
+                if (this.turn && this.redPotted) {
+                    this.scored = true;
                 }
             }
         }
@@ -157,16 +162,24 @@ var playState = {
 
         var opposite = game.input.y - this.stick.position.y;
         var adjacent = game.input.x - this.stick.position.x;
+        ////check ending
+        if (game.input.activePointer.rightButton.isDown) {
+            game.state.start("redwin");
+            this.bgmusic.destroy();
+        }
 
         if (moving == 0) {
+            this.turn = this.nextTurn;
+            // if (this.turn) console.log("red")
+            // else console.log("blue");
             if (this.whiteball.alive) {
                 if (game.input.activePointer.leftButton.isDown) {
-                    if (dir == 1) {
-                        if (this.power == 2000) dir = 0;
+                    if (this.dir == 1) {
+                        if (this.power == 2000) this.dir = 0;
                         this.power += 20;
                         this.stick.anchor.x += 0.004;
                     } else {
-                        if (this.power == 0) dir = 1;
+                        if (this.power == 0) this.dir = 1;
                         this.power -= 20;
                         this.stick.anchor.x -= 0.004;
                     }
@@ -187,10 +200,17 @@ var playState = {
             this.stick.x = this.whiteball.x;
             this.stick.y = this.whiteball.y;
             this.stick.alpha = 1;
+            this.scored = false;
         } else {
             this.ballmoving();
+            this.setnextTurn();
         }
-
+    },
+    setnextTurn: function() {
+        if (!this.playerIsSet) return;
+        if (!this.whiteball.alive) this.nextTurn = !this.turn;
+        else if (!this.scored) this.nextTurn = !this.turn;
+        else this.nextTurn = this.turn;
     },
     checkmoving: function () {
         if (this.whiteball.alive) {
@@ -333,29 +353,33 @@ var playState = {
     checkEnd: function () {
         var moving = this.checkmoving();
         // turn false == blue turn, turn true == red turn
-        if (!turn) {
-            if (blueLeft == 0) {
+        if (!this.turn) {
+            if (this.blueLeft == 0) {
                 if (!this.blackball.alive && moving == 0) {
+                    this.bgmusic.destroy();
                     if (this.whiteball.alive) {
                         game.state.start('bluewin');
                     } else game.state.start('redwin');
                 }
             } else {
                 if (!this.blackball.alive && moving == 0) {
+                    this.bgmusic.destroy();
                     if (this.whiteball.alive) {
                         game.state.start('redwin');
                     } else game.state.start('bluewin');
                 }
             }
         } else {
-            if (redLeft == 0) {
+            if (this.redLeft == 0) {
                 if (!this.blackball.alive && moving == 0) {
+                    this.bgmusic.destroy();
                     if (this.whiteball.alive) {
                         game.state.start('redwin');
                     } else game.state.start('bluewin');
                 }
             } else {
                 if (!this.blackball.alive && moving == 0) {
+                    this.bgmusic.destroy();
                     if (this.whiteball.alive) {
                         game.state.start('bluewin');
                     } else game.state.start('redwin');
@@ -365,15 +389,15 @@ var playState = {
     },
     PIStext: function () {
         // player is set text
-        if (playerIsSet) {
-            if (textDisplayed) {
+        if (this.playerIsSet) {
+            if (this.textDisplayed) {
                 if (this.text.alpha > 0) {
                     this.text.alpha -= 0.005;
                 }
             }
             else {
-                textDisplayed = 1;
-                if (!turn) {
+                this.textDisplayed = 1;
+                if (!this.turn) {
                     this.text.setText('You are BLUEBALL player!');
                     this.text.alpha = 1;
                 }
