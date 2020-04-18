@@ -1,6 +1,6 @@
 # Software Studio 2019 Summer Final Project
 
-<img src = "pic.png" width = "1273px" height = "740px"></img>
+<img src = "pic.png"></img>
 
 ## 8 Ball Pool
 ### By 張子宜、林意清、洪若淮
