@@ -2,8 +2,8 @@
 
 <img src = "pic.png" width = "1273px" height = "740px"></img>
 
-## Topic
-* Project Name : 8 Ball Pool
+## 8 Ball Pool
+### By 張子宜、林意清、洪若淮
 * Key functions
     1. hitting the ball
     2. controlling the force and the direction of the pole
