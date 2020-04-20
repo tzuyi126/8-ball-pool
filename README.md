@@ -20,5 +20,5 @@
 
 # 作品網址：https://106062301.gitlab.io/8ballpool
 
-<img src = "pic.png"></img>
+![image](pic.png)
 
