@@ -1,6 +1,5 @@
 # Software Studio 2019 Summer Final Project
 
-<img src = "pic.png"></img>
 
 ## 8 Ball Pool
 ### By 張子宜、林意清、洪若淮
@@ -20,3 +19,6 @@
 * audio playing
 
 # 作品網址：https://106062301.gitlab.io/8ballpool
+
+<img src = "pic.png"></img>
+
