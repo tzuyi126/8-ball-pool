@@ -18,7 +18,7 @@
 * restart button (sprite when hover)
 * audio playing
 
-# 作品網址：https://106062301.gitlab.io/8ballpool
+## website：https://106062301.gitlab.io/8ballpool
 
 ![image](pic.png)
 
