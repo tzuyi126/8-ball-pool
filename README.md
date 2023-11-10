@@ -1,9 +1,7 @@
-# Software Studio 2019 Summer Final Project
-
-
-## 8 Ball Pool
-### By 張子宜、林意清、洪若淮
-* Key functions
+# 8 Ball Pool
+- Software Studio 2019 Summer Final Project
+- 
+## Key functions
     1. hitting the ball
     2. controlling the force and the direction of the pole
     3. collision
