@@ -16,7 +16,8 @@
 * restart button (sprite when hover)
 * audio playing
 
-## website：https://106062301.gitlab.io/8ballpool
+## Resource
+- website：https://106062301.gitlab.io/8ballpool
 
 ![image](pic.png)
 
